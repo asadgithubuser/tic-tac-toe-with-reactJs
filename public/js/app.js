@@ -5483,6 +5483,7 @@ var App = /*#__PURE__*/function (_React$Component) {
       history: [{
         squares: Array(9).fill(null)
       }],
+      stepNumber: 0,
       xIsNext: true
     };
     return _this;
@@ -5491,7 +5492,7 @@ var App = /*#__PURE__*/function (_React$Component) {
   _createClass(App, [{
     key: "handleClick",
     value: function handleClick(i) {
-      var history = this.state.history;
+      var history = this.state.history.slice(0, this.state.stepNumber + 1);
       var current = history[history.length - 1];
       var squares = current.squares.slice();
 
@@ -5504,7 +5505,16 @@ var App = /*#__PURE__*/function (_React$Component) {
         history: history.concat([{
           squares: squares
         }]),
+        stepNumber: history.length,
         xIsNext: !this.state.xIsNext
+      });
+    }
+  }, {
+    key: "jumpTo",
+    value: function jumpTo(step) {
+      this.setState({
+        stepNumber: step,
+        xIsNext: step % 2 === 0
       });
     }
   }, {
@@ -5513,8 +5523,19 @@ var App = /*#__PURE__*/function (_React$Component) {
       var _this2 = this;
 
       var history = this.state.history;
-      var current = history[history.length - 1];
+      var current = history[this.state.stepNumber];
       var winner = calculateWinner(current.squares);
+      var moves = history.map(function (step, move) {
+        var decs = move ? 'Go to move #' + move : 'Go to game start';
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("li", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+            onClick: function onClick() {
+              return _this2.jumpTo(move);
+            },
+            children: decs
+          })
+        }, move);
+      });
       var status;
 
       if (winner) {
@@ -5533,9 +5554,13 @@ var App = /*#__PURE__*/function (_React$Component) {
               return _this2.handleClick(i);
             }
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           className: "game-info",
-          children: status
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            children: status
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ol", {
+            children: moves
+          })]
         })]
       });
     }
